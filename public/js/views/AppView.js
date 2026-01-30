@@ -37,6 +37,10 @@ export class AppView {
     bindReact(handler) {
         this.reactHandler = handler;
     }
+    // Подписка контроллера на событие добавления комментария
+    bindComment(handler) {
+        this.commentHandler = handler;
+    }
     // Показать сообщение об ошибке/подсказке
     showMessage(text) {
         this.message.textContent = text;
@@ -80,6 +84,13 @@ export class AppView {
                     ${this.reactionButton(post, 'wow', 'Wow', post.reactions.wow)}
                     ${this.reactionButton(post, 'laugh', 'Haha', post.reactions.laugh)}
                 </div>
+                <div class="comments">
+                    <ul class="comment-list"></ul>
+                    <form class="comment-form">
+                        <input type="text" name="comment" placeholder="Add a comment..." required />
+                        <button type="submit">Post</button>
+                    </form>
+                </div>
             </div>
         `;
         // Навешиваем обработчики на кнопки реакций
@@ -91,7 +102,27 @@ export class AppView {
                 this.reactHandler?.(postId, reaction);
             });
         });
+        const commentList = container.querySelector('.comment-list');
+        post.comments.forEach(comment => {
+            commentList.appendChild(this.createCommentElement(comment));
+        });
+        const commentForm = container.querySelector('.comment-form');
+        commentForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(commentForm);
+            const text = String(formData.get('comment') || '').trim();
+            if (text && this.commentHandler) {
+                this.commentHandler(post.id, text);
+                commentForm.reset();
+            }
+        });
         return container;
+    }
+    createCommentElement(comment) {
+        const item = document.createElement('li');
+        item.className = 'comment';
+        item.textContent = comment.text;
+        return item;
     }
     // Возвращаем шаблон реакции
     reactionButton(post, reaction, label, count) {

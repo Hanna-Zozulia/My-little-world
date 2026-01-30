@@ -1,7 +1,9 @@
 import { Post, ReactionType } from "../models/Post.js";
+import { Comment } from "../models/Comment.js";
 
 type CreateHandler = (imageUrl: string, caption: string) => void;
 type ReactHandler = (postId: number, reaction: ReactionType) => void;
+type CommentHandler = (postId: number, text: string) => void;
 
 // Представление: отвечает за DOM, формы и вывод ленты
 export class AppView {
@@ -10,6 +12,8 @@ export class AppView {
     private message: HTMLElement;
     private createHandler?: CreateHandler;
     private reactHandler?: ReactHandler;
+    private commentHandler?: CommentHandler;
+
     constructor(private root: HTMLElement) {
         // Базовая разметка приложения
         this.root.innerHTML = `
@@ -48,6 +52,11 @@ export class AppView {
     // Подписка контроллера на событие реакции
     bindReact(handler: ReactHandler): void {
         this.reactHandler = handler;
+    }
+
+    // Подписка контроллера на событие добавления комментария
+    bindComment(handler: CommentHandler): void {
+        this.commentHandler = handler;
     }
 
     // Показать сообщение об ошибке/подсказке
@@ -98,6 +107,13 @@ export class AppView {
                     ${this.reactionButton(post, 'wow', 'Wow', post.reactions.wow)}
                     ${this.reactionButton(post, 'laugh', 'Haha', post.reactions.laugh)}
                 </div>
+                <div class="comments">
+                    <ul class="comment-list"></ul>
+                    <form class="comment-form">
+                        <input type="text" name="comment" placeholder="Add a comment..." required />
+                        <button type="submit">Post</button>
+                    </form>
+                </div>
             </div>
         `;
 
@@ -110,8 +126,32 @@ export class AppView {
                 this.reactHandler?.(postId,reaction);
             });
         });
+
+        const commentList = container.querySelector('.comment-list') as HTMLUListElement;
+        post.comments.forEach(comment => {
+            commentList.appendChild(this.createCommentElement(comment));
+        });
+
+        const commentForm = container.querySelector('.comment-form') as HTMLFormElement;
+        commentForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(commentForm);
+            const text = String(formData.get('comment') || '').trim();
+            if (text && this.commentHandler) {
+                this.commentHandler(post.id, text);
+                commentForm.reset();
+            }
+        });
+
         return container;
      }
+
+     private createCommentElement(comment: Comment): HTMLElement {
+        const item = document.createElement('li');
+        item.className = 'comment';
+        item.textContent = comment.text;
+        return item;
+    }
 
      // Возвращаем шаблон реакции
      private reactionButton(post: Post, reaction: ReactionType, label: string, count: number): String {

@@ -1,10 +1,12 @@
 import { Post } from '../models/Post.js';
+import { Comment } from '../models/Comment.js';
 // Точка инициаоизации: подписываем события, наполняем демо-данными и показываем списокView
 export class AppController {
     constructor(view) {
         this.view = view;
         this.posts = [];
         this.nextId = 1;
+        this.nextCommentId = 1;
         // Обработчик создания нового поста
         this.handleCreatePost = (imageUrl, caption) => {
             if (!imageUrl || !caption) {
@@ -25,11 +27,20 @@ export class AppController {
             found.addReaction(reaction);
             this.view.render(this.posts);
         };
+        this.handleComment = (postId, text) => {
+            const post = this.posts.find(p => p.id === postId);
+            if (post) {
+                const newComment = new Comment(this.nextCommentId++, postId, text);
+                post.comments.push(newComment);
+                this.view.render(this.posts);
+            }
+        };
     }
     // Добавляем несколько стартовых постов
     init() {
         this.view.bindCreate(this.handleCreatePost);
         this.view.bindReact(this.handleReact);
+        this.view.bindComment(this.handleComment);
         this.seed();
         this.view.render(this.posts);
     }

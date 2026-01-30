@@ -11,6 +11,7 @@ describe('AppController', () => {
         mockAppView = {
             bindCreate: jest.fn(),
             bindReact: jest.fn(),
+            bindComment: jest.fn(),
             showMessage: jest.fn(),
             clearMessage: jest.fn(),
             render: jest.fn(),

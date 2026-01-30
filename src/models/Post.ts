@@ -1,3 +1,5 @@
+import { Comment } from './Comment';
+
 // Возможные типы реакций под постом
 export type ReactionType = 'like' | 'wow' | 'laugh';
 
@@ -7,7 +9,8 @@ export class Post {
         public id: number,
         public imageUrl: string,
         public caption: string,
-        public reactions: Record<ReactionType, number> = {like: 0, wow: 0, laugh: 0}
+        public reactions: Record<ReactionType, number> = {like: 0, wow: 0, laugh: 0},
+        public comments: Comment[] = []
     ) {}
 
     // Увеличиваем счетчик выбранной реакции

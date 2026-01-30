@@ -1,10 +1,12 @@
 import {AppView} from '../views/AppView.js';
 import {Post, ReactionType} from '../models/Post.js';
+import { Comment } from '../models/Comment.js';
 
 // Точка инициаоизации: подписываем события, наполняем демо-данными и показываем списокView
 export class AppController {
     private posts: Post[] = [];
     private nextId = 1;
+    private nextCommentId = 1;
 
     constructor(private view: AppView) {}
 
@@ -12,6 +14,7 @@ export class AppController {
     init(): void {
         this.view.bindCreate(this.handleCreatePost);
         this.view.bindReact(this.handleReact);
+        this.view.bindComment(this.handleComment);
         this.seed();
         this.view.render(this.posts);
     }
@@ -56,5 +59,14 @@ export class AppController {
 
         found.addReaction(reaction);
         this.view.render(this.posts);
+    };
+
+    private handleComment = (postId: number, text: string): void => {
+        const post = this.posts.find(p => p.id === postId);
+        if (post) {
+            const newComment = new Comment(this.nextCommentId++, postId, text);
+            post.comments.push(newComment);
+            this.view.render(this.posts);
+        }
     };
 }

@@ -145,3 +145,59 @@ body {
   .app { padding: 16px; }
   .reaction { width: 100%; justify-content: space-between; }
 }
+
+/* Comments Section Styles */
+.comments {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.comment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+    display: grid;
+    gap: 10px;
+}
+
+.comment {
+    background: #0b1220;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.comment-form {
+    display: flex;
+    gap: 8px;
+}
+
+.comment-form input {
+    flex-grow: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #0b1220;
+    color: var(--text);
+}
+
+.comment-form button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #0b1220;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 120ms ease, filter 120ms ease;
+}
+
+.comment-form button:hover { 
+    filter: brightness(1.05); 
+    transform: translateY(-1px); 
+}
+.comment-form button:active { 
+    transform: translateY(0); 
+}
